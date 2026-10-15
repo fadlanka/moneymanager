@@ -63,7 +63,13 @@ fn setup(db: PgPool) -> TestApp {
 }
 
 impl TestApp {
-    async fn call(&self, method: Method, path: &str, token: Option<&str>, body: Option<Value>) -> (StatusCode, Value) {
+    async fn call(
+        &self,
+        method: Method,
+        path: &str,
+        token: Option<&str>,
+        body: Option<Value>,
+    ) -> (StatusCode, Value) {
         let mut req = Request::builder().method(method).uri(format!("/api{path}"));
         if let Some(t) = token {
             req = req.header(header::AUTHORIZATION, format!("Bearer {t}"));
@@ -97,13 +103,19 @@ impl TestApp {
             .method(Method::POST)
             .uri("/api/receipts")
             .header(header::AUTHORIZATION, format!("Bearer {token}"))
-            .header(header::CONTENT_TYPE, format!("multipart/form-data; boundary={boundary}"))
+            .header(
+                header::CONTENT_TYPE,
+                format!("multipart/form-data; boundary={boundary}"),
+            )
             .body(Body::from(body))
             .unwrap();
         let resp = self.app.clone().oneshot(req).await.unwrap();
         let status = resp.status();
         let bytes = resp.into_body().collect().await.unwrap().to_bytes();
-        (status, serde_json::from_slice(&bytes).unwrap_or(Value::Null))
+        (
+            status,
+            serde_json::from_slice(&bytes).unwrap_or(Value::Null),
+        )
     }
 
     async fn register(&self, email: &str) -> String {
@@ -120,11 +132,16 @@ impl TestApp {
     }
 
     async fn drain_queue(&self) {
-        while queue::process_one(&self.state, &self.limiter).await.unwrap() {}
+        while queue::process_one(&self.state, &self.limiter)
+            .await
+            .unwrap()
+        {}
     }
 
     async fn category_id(&self, token: &str, slug: &str) -> String {
-        let (_, cats) = self.call(Method::GET, "/categories", Some(token), None).await;
+        let (_, cats) = self
+            .call(Method::GET, "/categories", Some(token), None)
+            .await;
         cats.as_array()
             .unwrap()
             .iter()
@@ -165,11 +182,21 @@ async fn auth_rules(db: PgPool) {
     assert_eq!(s, StatusCode::CONFLICT);
 
     let (s, _) = t
-        .call(Method::POST, "/auth/login", None, Some(json!({ "email": "fadlan@example.com", "password": "salah123" })))
+        .call(
+            Method::POST,
+            "/auth/login",
+            None,
+            Some(json!({ "email": "fadlan@example.com", "password": "salah123" })),
+        )
         .await;
     assert_eq!(s, StatusCode::UNAUTHORIZED);
     let (s, v) = t
-        .call(Method::POST, "/auth/login", None, Some(json!({ "email": "FADLAN@example.com", "password": "rahasia123" })))
+        .call(
+            Method::POST,
+            "/auth/login",
+            None,
+            Some(json!({ "email": "FADLAN@example.com", "password": "rahasia123" })),
+        )
         .await;
     assert_eq!(s, StatusCode::OK);
     assert!(v["token"].is_string());
@@ -180,7 +207,10 @@ async fn auth_rules(db: PgPool) {
     assert_eq!(s, StatusCode::UNAUTHORIZED);
 
     let (_, cats) = t.call(Method::GET, "/categories", Some(&token), None).await;
-    assert!(cats.as_array().unwrap().len() >= 10, "default categories are seeded");
+    assert!(
+        cats.as_array().unwrap().len() >= 10,
+        "default categories are seeded"
+    );
 }
 
 #[sqlx::test(migrator = "budget_backend::MIGRATOR")]
@@ -195,18 +225,28 @@ async fn receipt_scan_to_transaction(db: PgPool) {
     assert_eq!(s, StatusCode::ACCEPTED, "{queued}");
     let rid = queued["id"].as_str().unwrap().to_string();
 
-    let (_, r) = t.call(Method::GET, &format!("/receipts/{rid}"), Some(&token), None).await;
+    let (_, r) = t
+        .call(Method::GET, &format!("/receipts/{rid}"), Some(&token), None)
+        .await;
     assert_eq!(r["status"], "pending");
 
     t.drain_queue().await;
 
-    let (s, r) = t.call(Method::GET, &format!("/receipts/{rid}"), Some(&token), None).await;
+    let (s, r) = t
+        .call(Method::GET, &format!("/receipts/{rid}"), Some(&token), None)
+        .await;
     assert_eq!(s, StatusCode::OK);
     // The fixture has two low-confidence lines, so the app must highlight them.
     assert_eq!(r["status"], "needs_review", "{r}");
     assert_eq!(r["extraction"]["total"]["value"], 87400);
     assert_eq!(r["extraction"]["items"][3]["flagged"], true);
-    assert!(r["issues"].as_array().unwrap().iter().any(|i| i["field"] == "items[3]"));
+    assert!(
+        r["issues"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .any(|i| i["field"] == "items[3]")
+    );
     let groceries = t.category_id(&token, "groceries").await;
     assert_eq!(r["suggested_category_id"], groceries.as_str());
 
@@ -235,14 +275,21 @@ async fn receipt_scan_to_transaction(db: PgPool) {
     assert_eq!(s, StatusCode::CREATED, "{tx}");
     assert_eq!(tx["source"], "scan");
 
-    let corrected: Vec<String> = sqlx::query_scalar("SELECT unnest(corrected_fields) FROM receipts WHERE id = $1::uuid")
-        .bind(&rid)
-        .fetch_all(&db)
-        .await
-        .unwrap();
-    assert_eq!(corrected, vec!["total", "items"], "the correction diff is stored for evaluation");
+    let corrected: Vec<String> =
+        sqlx::query_scalar("SELECT unnest(corrected_fields) FROM receipts WHERE id = $1::uuid")
+            .bind(&rid)
+            .fetch_all(&db)
+            .await
+            .unwrap();
+    assert_eq!(
+        corrected,
+        vec!["total", "items"],
+        "the correction diff is stored for evaluation"
+    );
 
-    let (_, r) = t.call(Method::GET, &format!("/receipts/{rid}"), Some(&token), None).await;
+    let (_, r) = t
+        .call(Method::GET, &format!("/receipts/{rid}"), Some(&token), None)
+        .await;
     assert_eq!(r["status"], "confirmed");
 
     // Saving the same receipt twice is refused.
@@ -258,14 +305,32 @@ async fn receipt_scan_to_transaction(db: PgPool) {
 
     // Another user can't see any of it.
     let other = t.register("teman@example.com").await;
-    let (s, _) = t.call(Method::GET, &format!("/receipts/{rid}"), Some(&other), None).await;
+    let (s, _) = t
+        .call(Method::GET, &format!("/receipts/{rid}"), Some(&other), None)
+        .await;
     assert_eq!(s, StatusCode::NOT_FOUND);
-    let (s, _) = t.call(Method::GET, &format!("/receipts/{rid}/image"), Some(&other), None).await;
+    let (s, _) = t
+        .call(
+            Method::GET,
+            &format!("/receipts/{rid}/image"),
+            Some(&other),
+            None,
+        )
+        .await;
     assert_eq!(s, StatusCode::NOT_FOUND);
     let txid = tx["id"].as_str().unwrap();
-    let (s, _) = t.call(Method::GET, &format!("/transactions/{txid}"), Some(&other), None).await;
+    let (s, _) = t
+        .call(
+            Method::GET,
+            &format!("/transactions/{txid}"),
+            Some(&other),
+            None,
+        )
+        .await;
     assert_eq!(s, StatusCode::NOT_FOUND);
-    let (_, list) = t.call(Method::GET, "/transactions", Some(&other), None).await;
+    let (_, list) = t
+        .call(Method::GET, "/transactions", Some(&other), None)
+        .await;
     assert_eq!(list.as_array().unwrap().len(), 0);
     // ...and can't attach someone else's category either.
     let (s, _) = t
@@ -288,7 +353,12 @@ async fn budgets_debts_and_summary(db: PgPool) {
     let housing = t.category_id(&token, "housing").await;
 
     let (s, _) = t
-        .call(Method::PATCH, "/me", Some(&token), Some(json!({ "monthly_income": 3_300_000 })))
+        .call(
+            Method::PATCH,
+            "/me",
+            Some(&token),
+            Some(json!({ "monthly_income": 3_300_000 })),
+        )
         .await;
     assert_eq!(s, StatusCode::OK);
 
@@ -324,36 +394,72 @@ async fn budgets_debts_and_summary(db: PgPool) {
     assert_eq!(s, StatusCode::OK);
     let sug = &sum["budget"]["suggestion"];
     assert_eq!(sug["shortfall"], 150_000, "{sum}");
-    assert!(sug["cuts"].as_array().unwrap().iter().all(|c| c["name"] != "Housing"));
+    assert!(
+        sug["cuts"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .all(|c| c["name"] != "Housing")
+    );
 
     let (s, after) = t
-        .call(Method::POST, "/budgets/apply-suggestion", Some(&token), Some(json!({})))
+        .call(
+            Method::POST,
+            "/budgets/apply-suggestion",
+            Some(&token),
+            Some(json!({})),
+        )
         .await;
     assert_eq!(s, StatusCode::OK, "{after}");
     assert_eq!(after["total_limit"], 2_550_000);
     assert!(after["suggestion"].is_null());
     let (s, _) = t
-        .call(Method::POST, "/budgets/apply-suggestion", Some(&token), Some(json!({})))
+        .call(
+            Method::POST,
+            "/budgets/apply-suggestion",
+            Some(&token),
+            Some(json!({})),
+        )
         .await;
     assert_eq!(s, StatusCode::CONFLICT, "nothing left to apply");
 
     // Paying the installment records an expense and lowers the balance.
     let (s, paid) = t
-        .call(Method::POST, &format!("/debts/{debt_id}/payments"), Some(&token), Some(json!({ "amount": 750_000 })))
+        .call(
+            Method::POST,
+            &format!("/debts/{debt_id}/payments"),
+            Some(&token),
+            Some(json!({ "amount": 750_000 })),
+        )
         .await;
     assert_eq!(s, StatusCode::CREATED, "{paid}");
     assert_eq!(paid["debt"]["balance"], 2_250_000);
     assert_eq!(paid["transaction"]["source"], "debt_payment");
     let (s, _) = t
-        .call(Method::POST, &format!("/debts/{debt_id}/payments"), Some(&token), Some(json!({ "amount": 9_000_000 })))
+        .call(
+            Method::POST,
+            &format!("/debts/{debt_id}/payments"),
+            Some(&token),
+            Some(json!({ "amount": 9_000_000 })),
+        )
         .await;
     assert_eq!(s, StatusCode::BAD_REQUEST, "overpaying is refused");
 
     let (_, sum) = t.call(Method::GET, "/summary", Some(&token), None).await;
     assert_eq!(sum["expense"], 750_000);
-    assert_eq!(sum["budget"]["upcoming_total"], 0, "this month's installment is paid");
+    assert_eq!(
+        sum["budget"]["upcoming_total"], 0,
+        "this month's installment is paid"
+    );
 
-    let (s, plan) = t.call(Method::GET, "/debts/plan?strategy=snowball&extra=250000", Some(&token), None).await;
+    let (s, plan) = t
+        .call(
+            Method::GET,
+            "/debts/plan?strategy=snowball&extra=250000",
+            Some(&token),
+            None,
+        )
+        .await;
     assert_eq!(s, StatusCode::OK, "{plan}");
     assert_eq!(plan["months"], 3);
     assert_eq!(plan["feasible"], true);
@@ -377,15 +483,23 @@ async fn budgets_debts_and_summary(db: PgPool) {
             Some(json!({ "kind": "income", "amount": 10, "merchant": "x", "category_id": food })),
         )
         .await;
-    assert_eq!(s, StatusCode::BAD_REQUEST, "income can't use an expense category");
+    assert_eq!(
+        s,
+        StatusCode::BAD_REQUEST,
+        "income can't use an expense category"
+    );
     let (_, sum) = t.call(Method::GET, "/summary", Some(&token), None).await;
     assert_eq!(sum["income"], 1_500_000);
     assert_eq!(sum["net"], 750_000);
 
-    let (_, found) = t.call(Method::GET, "/transactions?q=laptop", Some(&token), None).await;
+    let (_, found) = t
+        .call(Method::GET, "/transactions?q=laptop", Some(&token), None)
+        .await;
     assert_eq!(found.as_array().unwrap().len(), 1);
 }
 
 fn current_month() -> String {
-    budget_backend::time::now_jakarta().format("%Y-%m").to_string()
+    budget_backend::time::now_jakarta()
+        .format("%Y-%m")
+        .to_string()
 }

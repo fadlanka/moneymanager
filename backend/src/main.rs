@@ -16,6 +16,11 @@ async fn main() -> anyhow::Result<()> {
         .init();
 
     let config = Config::from_env()?;
+    if config.invite_code.is_none() {
+        tracing::warn!(
+            "INVITE_CODE is not set: anyone who can reach the server can create an account"
+        );
+    }
     let db = PgPoolOptions::new()
         .max_connections(10)
         .connect(&config.database_url)
@@ -56,7 +61,8 @@ async fn shutdown_signal() {
     };
     #[cfg(unix)]
     let terminate = async {
-        if let Ok(mut s) = tokio::signal::unix::signal(tokio::signal::unix::SignalKind::terminate()) {
+        if let Ok(mut s) = tokio::signal::unix::signal(tokio::signal::unix::SignalKind::terminate())
+        {
             s.recv().await;
         }
     };

@@ -22,7 +22,7 @@ dan jujur soal kapan LLM boleh dipercaya.
 
 | Bagian | Pilihan | Alasan |
 |---|---|---|
-| Mobile app | **Flutter** (Android dulu) | Menerima share intent sudah matang (`receive_sharing_intent`); Fadlan sudah pakai Flutter |
+| Mobile app | **Flutter** (Android APK + web/PWA untuk iPhone) | Menerima share intent sudah matang (`receive_sharing_intent`); Fadlan sudah pakai Flutter |
 | Backend API | **Rust — Axum + sqlx + tokio** | Ringan RAM (VPS kecil), cepat; kerjanya hanya HTTP + DB + panggil LLM |
 | Database | **PostgreSQL** | Relasional, multi-user, transaksi uang |
 | LLM ekstraksi | Provider-agnostic: **Gemini Flash** atau **Ollama (lokal)** lewat interface OpenAI-compatible | Bisa diganti lewat config, dan dibandingkan di evaluasi |
@@ -195,12 +195,31 @@ Warna kategori: Food & drinks = yellow, Shopping = red, Transport = green, Housi
 - Catat latensi dan biaya per struk. Hasil yang belum ada tulis sebagai `...` di laporan.
 - Saat menjalankan eval batch, beri jeda / rate limit (jangan ulangi masalah 429 seperti evaluasi RAGAS di skripsi).
 
+## Keputusan yang sudah diambil
+
+- **Platform**: Android = APK (jalur utama). Teman pengguna iPhone (iPhone 17 Air, iOS 26) memakai **build web Flutter sebagai PWA**
+  ("Add to Home Screen") karena iOS tidak bisa install app di luar App Store tanpa akun Apple Developer.
+  Konsekuensi: di PWA tidak ada share-to-app, upload lewat tombol kamera/galeri. iOS native = opsional (butuh Mac + TestFlight).
+- **Tab kelima** di desain (Splits) diganti **Debts** untuk fase 1; Splits = fase 2.
+- Kartu saran budget berlabel **"Suggestion"**, bukan "AI suggestion", karena angkanya dari kalkulator deterministik.
+- **Push notification = fase 2**, pakai **FCM (gratis)**. Web push ke PWA iPhone jalan di iOS 16.4+ setelah Add to Home Screen.
+  Prioritas: (1) struk selesai dibaca, (2) pengingat cicilan H-3/H-0, (3) budget kategori 85%/100%. Opsional: patungan, pengingat harian.
+- Registrasi hanya dengan `INVITE_CODE`.
+- Repo: https://github.com/fadlanka/moneymanager
+
 ## Keputusan yang masih terbuka (tanyakan ke Fadlan bila relevan)
 
-- Ada teman yang pakai **iPhone**? Kalau ya: iOS butuh share extension + build di macOS/Xcode; alternatif upload lewat web atau email.
-- **Bahasa UI**: desain masih bahasa Inggris; tentukan Indonesia atau Inggris sebelum banyak string ditulis (siapkan i18n sejak awal).
-- Provider ekstraksi default: Gemini (akurasi) atau Ollama (privasi).
-- Fitur Splits benar-benar masuk scope atau tidak.
+- **Bahasa UI**: string masih bahasa Inggris, semua ada di `app/lib/l10n/strings.dart`.
+- Provider ekstraksi default: Gemini (akurasi) atau Ollama (privasi). Teman harus tahu data struknya dikirim ke mana.
+
+## Status MVP (fase 1)
+
+- Backend selesai dan teruji: 45 unit test + 3 tes API (Postgres sungguhan), plus uji manual binary dengan server
+  OpenAI-compatible palsu (JSON dalam ```fence, angka "Rp 26.000", tanggal "15/10/26", item math salah → ter-flag).
+  Jalankan tes: `cd backend && DATABASE_URL=postgres://... cargo test`. Query sqlx offline ada di `backend/.sqlx` (`cargo sqlx prepare -- --all-targets` setelah ubah query).
+- Flutter: kode lengkap tapi **belum pernah di-compile** (ditulis di lingkungan tanpa Flutter SDK). Langkah pertama di laptop:
+  `cd app && flutter create . --org com.fadlanka --project-name moneymanager --platforms android,ios,web && flutter pub get && flutter analyze`, lalu perbaiki error yang muncul.
+- Belum ada: push notification, Splits, chat planner LLM, evaluasi (`eval/` baru berisi rencana + query export koreksi).
 
 ## Lingkungan dev
 

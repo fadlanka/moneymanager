@@ -1,0 +1,14 @@
+{$DOMAIN} {
+	encode gzip
+
+	handle /api/* {
+		reverse_proxy api:8080
+	}
+
+	# Flutter web build (the PWA for iPhone users). Same origin as the API, so no CORS needed.
+	handle {
+		root * /srv/web
+		try_files {path} /index.html
+		file_server
+	}
+}

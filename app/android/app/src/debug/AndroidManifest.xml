@@ -1,0 +1,5 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Debug only: talk to a local backend over plain HTTP (10.0.2.2 / LAN IP). Release builds need HTTPS. -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <application android:usesCleartextTraffic="true" />
+</manifest>
