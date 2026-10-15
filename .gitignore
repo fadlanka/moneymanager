@@ -1,0 +1,24 @@
+# Rust
+backend/target/
+# Secrets and local data
+.env
+backend/.env
+backend/data/
+data/
+# Evaluation photos are personal data: never commit them
+eval/data/images/
+# Flutter
+app/.dart_tool/
+app/build/
+app/.flutter-plugins
+app/.flutter-plugins-dependencies
+app/.packages
+app/pubspec.lock.bak
+app/ios/Pods/
+app/android/.gradle/
+app/android/local.properties
+app/android/key.properties
+*.jks
+*.keystore
+.DS_Store
+.idea/

@@ -1,0 +1,74 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "UPDATE receipts SET status = 'processing', attempts = attempts + 1, updated_at = now()\n           WHERE id = (\n               SELECT id FROM receipts\n               WHERE status = 'pending' AND next_attempt_at <= now()\n               ORDER BY next_attempt_at\n               FOR UPDATE SKIP LOCKED\n               LIMIT 1\n           )\n           RETURNING id, user_id, image_path, mime_type, attempts",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Uuid",
+        "origin": {
+          "Table": {
+            "table": "receipts",
+            "name": "id"
+          }
+        }
+      },
+      {
+        "ordinal": 1,
+        "name": "user_id",
+        "type_info": "Uuid",
+        "origin": {
+          "Table": {
+            "table": "receipts",
+            "name": "user_id"
+          }
+        }
+      },
+      {
+        "ordinal": 2,
+        "name": "image_path",
+        "type_info": "Text",
+        "origin": {
+          "Table": {
+            "table": "receipts",
+            "name": "image_path"
+          }
+        }
+      },
+      {
+        "ordinal": 3,
+        "name": "mime_type",
+        "type_info": "Text",
+        "origin": {
+          "Table": {
+            "table": "receipts",
+            "name": "mime_type"
+          }
+        }
+      },
+      {
+        "ordinal": 4,
+        "name": "attempts",
+        "type_info": "Int4",
+        "origin": {
+          "Table": {
+            "table": "receipts",
+            "name": "attempts"
+          }
+        }
+      }
+    ],
+    "parameters": {
+      "Left": []
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "3af20ec7b65c4099f2141bbd27703e9d9760ddbe15256710b15e092a937d2110"
+}

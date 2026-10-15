@@ -1,0 +1,17 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "INSERT INTO budgets (user_id, category_id, month, limit_amount)\n           VALUES ($1, $2, $3, $4)\n           ON CONFLICT (user_id, category_id, month) DO UPDATE SET limit_amount = EXCLUDED.limit_amount",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Uuid",
+        "Date",
+        "Int8"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "c32203f2456a4fe16bc514cffb19bdbeb4ca1cd412c78d45d1a17c56e46f655b"
+}

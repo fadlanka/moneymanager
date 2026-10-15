@@ -1,0 +1,12 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "UPDATE receipts SET status = 'pending', updated_at = now()\n           WHERE status = 'processing' AND updated_at < now() - interval '10 minutes'",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": []
+    },
+    "nullable": []
+  },
+  "hash": "e2daf3c91710ea3db49e07b1a447a13729d02abd90909c67ecf630a5497c1f36"
+}

@@ -1,0 +1,17 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "UPDATE receipts SET status = 'failed', error = $2, provider = $3, model = $4,\n             processed_at = now(), updated_at = now()\n           WHERE id = $1",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Text",
+        "Text",
+        "Text"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "70b7187778a8ac98a3c69f1d098913f28bfcfc44ee5ba3a7c117629e46b947cc"
+}

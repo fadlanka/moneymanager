@@ -1,0 +1,16 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "UPDATE receipts SET status = 'pending', error = $2,\n             next_attempt_at = now() + make_interval(secs => $3), updated_at = now()\n           WHERE id = $1",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Text",
+        "Float8"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "ad58aa74f1cde6d3d83c3aad079c21ae142a16360a867922607e209dbcad6714"
+}

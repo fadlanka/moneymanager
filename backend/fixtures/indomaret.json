@@ -1,0 +1,19 @@
+{
+  "is_receipt": true,
+  "merchant": { "value": "Indomaret", "confidence": 0.97 },
+  "date": { "value": "2026-10-15T19:05:00+07:00", "confidence": 0.9 },
+  "items": [
+    { "name": "INDOMIE GRG", "qty": 5, "unit_price": 3500, "total": 17500, "confidence": 0.95 },
+    { "name": "UHT MILK 1L", "qty": 1, "unit_price": 19900, "total": 19900, "confidence": 0.93 },
+    { "name": "ROTI TAWAR", "qty": 1, "unit_price": 16500, "total": 16500, "confidence": 0.92 },
+    { "name": "TELUR 10S", "qty": 1, "unit_price": 27000, "total": 27000, "confidence": 0.55 },
+    { "name": "SABUN CUCI PIRING", "qty": 1, "unit_price": 6500, "total": 6500, "confidence": 0.6 }
+  ],
+  "subtotal": { "value": 87400, "confidence": 0.9 },
+  "tax": { "value": null, "confidence": 0 },
+  "service": { "value": null, "confidence": 0 },
+  "discount": { "value": null, "confidence": 0 },
+  "total": { "value": 87400, "confidence": 0.98 },
+  "category_suggestion": { "value": "groceries", "confidence": 0.8 },
+  "currency": "IDR"
+}

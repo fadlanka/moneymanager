@@ -1,0 +1,145 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "UPDATE debts SET name = $3, kind = $4, creditor = $5, principal = $6, balance = $7,\n             monthly_payment = $8, interest_rate_bp = $9, due_day = $10, updated_at = now()\n           WHERE user_id = $1 AND id = $2\n           RETURNING id, name, kind, creditor, principal, balance, monthly_payment, interest_rate_bp, due_day, created_at",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Uuid",
+        "origin": {
+          "Table": {
+            "table": "debts",
+            "name": "id"
+          }
+        }
+      },
+      {
+        "ordinal": 1,
+        "name": "name",
+        "type_info": "Text",
+        "origin": {
+          "Table": {
+            "table": "debts",
+            "name": "name"
+          }
+        }
+      },
+      {
+        "ordinal": 2,
+        "name": "kind",
+        "type_info": "Text",
+        "origin": {
+          "Table": {
+            "table": "debts",
+            "name": "kind"
+          }
+        }
+      },
+      {
+        "ordinal": 3,
+        "name": "creditor",
+        "type_info": "Text",
+        "origin": {
+          "Table": {
+            "table": "debts",
+            "name": "creditor"
+          }
+        }
+      },
+      {
+        "ordinal": 4,
+        "name": "principal",
+        "type_info": "Int8",
+        "origin": {
+          "Table": {
+            "table": "debts",
+            "name": "principal"
+          }
+        }
+      },
+      {
+        "ordinal": 5,
+        "name": "balance",
+        "type_info": "Int8",
+        "origin": {
+          "Table": {
+            "table": "debts",
+            "name": "balance"
+          }
+        }
+      },
+      {
+        "ordinal": 6,
+        "name": "monthly_payment",
+        "type_info": "Int8",
+        "origin": {
+          "Table": {
+            "table": "debts",
+            "name": "monthly_payment"
+          }
+        }
+      },
+      {
+        "ordinal": 7,
+        "name": "interest_rate_bp",
+        "type_info": "Int4",
+        "origin": {
+          "Table": {
+            "table": "debts",
+            "name": "interest_rate_bp"
+          }
+        }
+      },
+      {
+        "ordinal": 8,
+        "name": "due_day",
+        "type_info": "Int4",
+        "origin": {
+          "Table": {
+            "table": "debts",
+            "name": "due_day"
+          }
+        }
+      },
+      {
+        "ordinal": 9,
+        "name": "created_at",
+        "type_info": "Timestamptz",
+        "origin": {
+          "Table": {
+            "table": "debts",
+            "name": "created_at"
+          }
+        }
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Uuid",
+        "Text",
+        "Text",
+        "Text",
+        "Int8",
+        "Int8",
+        "Int8",
+        "Int4",
+        "Int4"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      true,
+      false,
+      false,
+      false,
+      false,
+      true,
+      false
+    ]
+  },
+  "hash": "4735887226975b788ad93f1b2cb8d03f5c3d9c8c398374bb3629a42f0818ac2b"
+}

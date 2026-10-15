@@ -1,0 +1,15 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "UPDATE receipts SET status = 'pending', attempts = 0, error = NULL,\n             next_attempt_at = now(), updated_at = now()\n           WHERE user_id = $1 AND id = $2 AND status = 'failed'",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Uuid"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "3a429ee5d59e3aeef190eea905578dbead2528e3e327992cf0694ad36f7c610b"
+}

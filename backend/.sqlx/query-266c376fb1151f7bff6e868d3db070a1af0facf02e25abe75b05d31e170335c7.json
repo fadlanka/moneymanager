@@ -1,0 +1,16 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "UPDATE receipts SET status = 'confirmed', confirmed = $2, corrected_fields = $3, updated_at = now()\n           WHERE id = $1",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Jsonb",
+        "TextArray"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "266c376fb1151f7bff6e868d3db070a1af0facf02e25abe75b05d31e170335c7"
+}

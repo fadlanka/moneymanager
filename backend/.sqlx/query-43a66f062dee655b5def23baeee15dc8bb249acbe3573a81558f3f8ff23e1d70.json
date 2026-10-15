@@ -1,0 +1,185 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "SELECT id, status, image_path, mime_type, provider, model, prompt_version,\n                  extraction, issues, error, attempts, latency_ms, created_at, processed_at\n           FROM receipts WHERE user_id = $1 AND id = $2",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Uuid",
+        "origin": {
+          "Table": {
+            "table": "receipts",
+            "name": "id"
+          }
+        }
+      },
+      {
+        "ordinal": 1,
+        "name": "status",
+        "type_info": "Text",
+        "origin": {
+          "Table": {
+            "table": "receipts",
+            "name": "status"
+          }
+        }
+      },
+      {
+        "ordinal": 2,
+        "name": "image_path",
+        "type_info": "Text",
+        "origin": {
+          "Table": {
+            "table": "receipts",
+            "name": "image_path"
+          }
+        }
+      },
+      {
+        "ordinal": 3,
+        "name": "mime_type",
+        "type_info": "Text",
+        "origin": {
+          "Table": {
+            "table": "receipts",
+            "name": "mime_type"
+          }
+        }
+      },
+      {
+        "ordinal": 4,
+        "name": "provider",
+        "type_info": "Text",
+        "origin": {
+          "Table": {
+            "table": "receipts",
+            "name": "provider"
+          }
+        }
+      },
+      {
+        "ordinal": 5,
+        "name": "model",
+        "type_info": "Text",
+        "origin": {
+          "Table": {
+            "table": "receipts",
+            "name": "model"
+          }
+        }
+      },
+      {
+        "ordinal": 6,
+        "name": "prompt_version",
+        "type_info": "Text",
+        "origin": {
+          "Table": {
+            "table": "receipts",
+            "name": "prompt_version"
+          }
+        }
+      },
+      {
+        "ordinal": 7,
+        "name": "extraction",
+        "type_info": "Jsonb",
+        "origin": {
+          "Table": {
+            "table": "receipts",
+            "name": "extraction"
+          }
+        }
+      },
+      {
+        "ordinal": 8,
+        "name": "issues",
+        "type_info": "Jsonb",
+        "origin": {
+          "Table": {
+            "table": "receipts",
+            "name": "issues"
+          }
+        }
+      },
+      {
+        "ordinal": 9,
+        "name": "error",
+        "type_info": "Text",
+        "origin": {
+          "Table": {
+            "table": "receipts",
+            "name": "error"
+          }
+        }
+      },
+      {
+        "ordinal": 10,
+        "name": "attempts",
+        "type_info": "Int4",
+        "origin": {
+          "Table": {
+            "table": "receipts",
+            "name": "attempts"
+          }
+        }
+      },
+      {
+        "ordinal": 11,
+        "name": "latency_ms",
+        "type_info": "Int4",
+        "origin": {
+          "Table": {
+            "table": "receipts",
+            "name": "latency_ms"
+          }
+        }
+      },
+      {
+        "ordinal": 12,
+        "name": "created_at",
+        "type_info": "Timestamptz",
+        "origin": {
+          "Table": {
+            "table": "receipts",
+            "name": "created_at"
+          }
+        }
+      },
+      {
+        "ordinal": 13,
+        "name": "processed_at",
+        "type_info": "Timestamptz",
+        "origin": {
+          "Table": {
+            "table": "receipts",
+            "name": "processed_at"
+          }
+        }
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Uuid"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      true,
+      true,
+      true,
+      true,
+      false,
+      true,
+      false,
+      true,
+      false,
+      true
+    ]
+  },
+  "hash": "43a66f062dee655b5def23baeee15dc8bb249acbe3573a81558f3f8ff23e1d70"
+}

@@ -1,0 +1,167 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "SELECT t.id, t.category_id, t.kind, t.amount, t.merchant, t.note, t.occurred_at, t.source,\n                  t.receipt_id, t.items, t.needs_check, t.created_at\n           FROM transactions t\n           LEFT JOIN categories c ON c.id = t.category_id\n           WHERE t.user_id = $1\n             AND ($2::timestamptz IS NULL OR t.occurred_at >= $2)\n             AND ($3::timestamptz IS NULL OR t.occurred_at < $3)\n             AND ($4::uuid IS NULL OR t.category_id = $4)\n             AND ($5::text IS NULL OR t.kind = $5)\n             AND ($6::bool IS NULL OR t.needs_check = $6)\n             AND ($7::text IS NULL OR t.merchant ILIKE $7 OR t.note ILIKE $7 OR c.name ILIKE $7)\n           ORDER BY t.occurred_at DESC, t.created_at DESC\n           LIMIT $8",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Uuid",
+        "origin": {
+          "Table": {
+            "table": "transactions",
+            "name": "id"
+          }
+        }
+      },
+      {
+        "ordinal": 1,
+        "name": "category_id",
+        "type_info": "Uuid",
+        "origin": {
+          "Table": {
+            "table": "transactions",
+            "name": "category_id"
+          }
+        }
+      },
+      {
+        "ordinal": 2,
+        "name": "kind",
+        "type_info": "Text",
+        "origin": {
+          "Table": {
+            "table": "transactions",
+            "name": "kind"
+          }
+        }
+      },
+      {
+        "ordinal": 3,
+        "name": "amount",
+        "type_info": "Int8",
+        "origin": {
+          "Table": {
+            "table": "transactions",
+            "name": "amount"
+          }
+        }
+      },
+      {
+        "ordinal": 4,
+        "name": "merchant",
+        "type_info": "Text",
+        "origin": {
+          "Table": {
+            "table": "transactions",
+            "name": "merchant"
+          }
+        }
+      },
+      {
+        "ordinal": 5,
+        "name": "note",
+        "type_info": "Text",
+        "origin": {
+          "Table": {
+            "table": "transactions",
+            "name": "note"
+          }
+        }
+      },
+      {
+        "ordinal": 6,
+        "name": "occurred_at",
+        "type_info": "Timestamptz",
+        "origin": {
+          "Table": {
+            "table": "transactions",
+            "name": "occurred_at"
+          }
+        }
+      },
+      {
+        "ordinal": 7,
+        "name": "source",
+        "type_info": "Text",
+        "origin": {
+          "Table": {
+            "table": "transactions",
+            "name": "source"
+          }
+        }
+      },
+      {
+        "ordinal": 8,
+        "name": "receipt_id",
+        "type_info": "Uuid",
+        "origin": {
+          "Table": {
+            "table": "transactions",
+            "name": "receipt_id"
+          }
+        }
+      },
+      {
+        "ordinal": 9,
+        "name": "items",
+        "type_info": "Jsonb",
+        "origin": {
+          "Table": {
+            "table": "transactions",
+            "name": "items"
+          }
+        }
+      },
+      {
+        "ordinal": 10,
+        "name": "needs_check",
+        "type_info": "Bool",
+        "origin": {
+          "Table": {
+            "table": "transactions",
+            "name": "needs_check"
+          }
+        }
+      },
+      {
+        "ordinal": 11,
+        "name": "created_at",
+        "type_info": "Timestamptz",
+        "origin": {
+          "Table": {
+            "table": "transactions",
+            "name": "created_at"
+          }
+        }
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Timestamptz",
+        "Timestamptz",
+        "Uuid",
+        "Text",
+        "Bool",
+        "Text",
+        "Int8"
+      ]
+    },
+    "nullable": [
+      false,
+      true,
+      false,
+      false,
+      false,
+      true,
+      false,
+      false,
+      true,
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "cbb4cd5134bafc014a5baeace266d82fcf61495f9cd060ed4f77d599ac30f834"
+}
